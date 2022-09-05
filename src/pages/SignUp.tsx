@@ -31,7 +31,11 @@ const SignUp: React.FC = () => {
         url: '/api/user/register',
         data,
       })
-      .then((res) => res.data)
+      .then((res) => {
+        if (res.data.result === true) {
+          window.location.href = '/login';
+        } else throw Error('계정 생성에 실패했습니다. 잠시 후 다시 시도해 주세요');
+      })
       .catch((err) => {
         if (err instanceof AxiosError) {
           console.log(err);

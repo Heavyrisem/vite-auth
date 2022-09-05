@@ -73,6 +73,7 @@ const Login: React.FC = () => {
             />
             <div css={[Form.ErrorMessageStyle]}>{errors.password?.message}</div>
           </div>
+          <div css={[Form.ErrorMessageStyle]}>{loginErrorMessage}</div>
         </div>
         <button
           type="submit"

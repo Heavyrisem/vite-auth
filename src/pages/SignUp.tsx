@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 import axios, { AxiosError } from 'axios';
 import tw from 'twin.macro';
@@ -16,33 +17,37 @@ interface SignUpForm {
 
 const SignUp: React.FC = () => {
   const { updateToken } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<SignUpForm>();
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const [signUpErrorMessage, setSignUpErrorMessage] = useState<string>();
 
-  const onSubmit = useCallback(async (data: SignUpForm) => {
-    axios
-      .request<{ result: boolean }>({
-        method: 'POST',
-        url: '/api/user/register',
-        data,
-      })
-      .then((res) => {
-        if (res.data.result === true) {
-          window.location.href = '/login';
-        } else throw Error('계정 생성에 실패했습니다. 잠시 후 다시 시도해 주세요');
-      })
-      .catch((err) => {
-        if (err instanceof AxiosError) {
-          console.log(err);
-          setErrorMessage(err.response?.data?.message || 'Unkown Error');
-        }
-      });
-  }, []);
+  const onSubmit = useCallback(
+    async (data: SignUpForm) => {
+      axios
+        .request<{ result: boolean }>({
+          method: 'POST',
+          url: '/api/user/register',
+          data,
+        })
+        .then((res) => {
+          if (res.data.result === true) {
+            navigate('/login');
+          } else throw Error('계정 생성에 실패했습니다. 잠시 후 다시 시도해 주세요');
+        })
+        .catch((err) => {
+          if (err instanceof AxiosError) {
+            console.log(err);
+            setSignUpErrorMessage(err.response?.data?.message || 'Unkown Error');
+          } else setSignUpErrorMessage(err.message);
+        });
+    },
+    [navigate],
+  );
 
   return (
     <FormLayout>
@@ -81,11 +86,10 @@ const SignUp: React.FC = () => {
             />
             <div css={[Form.ErrorMessageStyle]}>{errors.password?.message}</div>
           </div>
-          <div css={[Form.ErrorMessageStyle]}>{errorMessage}</div>
+          <div css={[Form.ErrorMessageStyle]}>{signUpErrorMessage}</div>
         </div>
         <button
           type="submit"
-          //   onClick={handleLoginClick}
           css={tw`w-full text-lg px-3.5 py-2 bg-purple-500 border-2 rounded-lg text-white border-purple-500 cursor-pointer duration-200 hover:text-purple-500 hover:bg-white`}
         >
           Sign Up

@@ -47,10 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       PUBLIC_KEY.then((key) => {
         jose
           .jwtVerify(token, key)
-          .then((res) => {
+          .then(() => {
             const parsedUser = jose.decodeJwt(token) as unknown as UserType;
             setUser(parsedUser);
-            console.log(res, parsedUser);
           })
           .catch((err) => {
             console.error('Cannot parse JWT token', err);

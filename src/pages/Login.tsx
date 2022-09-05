@@ -34,12 +34,12 @@ const Login: React.FC = () => {
         .then((res) => {
           if (res.data.token) {
             updateToken(res.data.token);
-          }
+          } else throw new Error('로그인에 실패했습니다.');
         })
         .catch((err) => {
           if (err instanceof AxiosError) {
             setLoginErrorMessage(err.response?.data?.message || 'Unkown Error');
-          }
+          } else setLoginErrorMessage(err.message);
         });
     },
     [updateToken],
@@ -77,7 +77,6 @@ const Login: React.FC = () => {
         </div>
         <button
           type="submit"
-          //   onClick={handleLoginClick}
           css={tw`w-full text-lg px-3.5 py-2 bg-purple-500 border-2 rounded-lg text-white border-purple-500 cursor-pointer duration-200 hover:text-purple-500 hover:bg-white`}
         >
           Log In
